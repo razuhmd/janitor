@@ -282,12 +282,12 @@ class Taglist extends Model {   //Class name always starts with a capital letter
 
 	function duplicateTaglist($action) {
 
-		global $model;
+		
 
 		if(count($action) == 2) {
 			$taglist_id = $action[1];
 
-			$taglist = $model->getTaglist(array("taglist_id" => $taglist_id));
+			$taglist = $this->getTaglist(array("taglist_id" => $taglist_id));
 			//print_r($taglist_tags);
 
 			if($taglist) {
