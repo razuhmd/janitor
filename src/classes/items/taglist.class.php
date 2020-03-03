@@ -299,7 +299,7 @@ class Taglist extends Model {   //Class name always starts with a capital letter
 				$_POST["name"] = $taglist["name"]." (cloned ".date("Y-m-d H:i:s").")";
 				// create root item
 				$cloned_taglist = $this->saveTaglist(["saveTaglist"]);
-				
+
 				unset($_POST);
 
 				// Did we succeed in creating duplicate taglist, then add the associated tag/s with the clone
