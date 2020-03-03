@@ -100,7 +100,7 @@ class Taglist extends Model {   //Class name always starts with a capital letter
 
 
 				// Get tags for taglist
-				$sql = "SELECT tags.id, tags.context, tags.value FROM ".$this->db_taglist_tags.", ". $this->db_tags." WHERE taglist_tags.tag_id = tags.id AND taglist_tags.taglist_id = '".$taglist["id"]."' ORDER BY taglist_tags.position ASC";
+				$sql = "SELECT tags.id, tags.context, tags.value, taglist_tags.position FROM ".$this->db_taglist_tags.", ". $this->db_tags." WHERE taglist_tags.tag_id = tags.id AND taglist_tags.taglist_id = '".$taglist["id"]."'";
 
 				if($query->sql($sql)) {
 					$taglist["tags"] = $query->results();
@@ -333,7 +333,7 @@ class Taglist extends Model {   //Class name always starts with a capital letter
 	function updateOrder($action) {
 
 		$order_list = getPost("order");
-		// print_r($order_list);
+		print_r($order_list);
 		if(count($action) == 2 && $order_list) {
 			$taglist_id = $action[1];
 
