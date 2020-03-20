@@ -92,7 +92,7 @@ class PageCore {
 		// set segment
 		if(getVar("segment")) {
 			// set real segment value
-			$this->segment(array("value" => getVar("segment"), "type" => "segment"));
+			$this->segment(["value" => getVar("segment"), "type" => "segment"]);
 		}
 
 		// set language
@@ -191,7 +191,7 @@ class PageCore {
 						}
 						// Linkedin size
 						else if(isset($_SERVER["HTTP_USER_AGENT"]) && strpos($_SERVER["HTTP_USER_AGENT"], "LinkedInBot") !== false) {
-							$this->pageImage("/images/".$item["id"]."/".$image["variant"]."/180x110.".$image["format"]);
+							$this->pageImage("/images/".$item["id"]."/".$image["variant"]."/1200x627.".$image["format"]);
 						}
 						// Standard size for everyone else
 						else {
@@ -1050,6 +1050,7 @@ class PageCore {
 		// setting new value
 		if($value !== false) {
 //			if(is_string($value) && preg_match("/^(basic|desktop|desktop_ie|desktop_light|tablet|mobile|mobile_touch|mobile_light|tv)$/", $value)) {
+
 			if(is_string($value) && preg_match("/^[a-z0-9_]+$/", $value)) {
 
 //				print "set segment:". $value;
