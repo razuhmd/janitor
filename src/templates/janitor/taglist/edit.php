@@ -1,6 +1,5 @@
 <?php
 global $action;
-
 global $model;
 global $itemtype;
 

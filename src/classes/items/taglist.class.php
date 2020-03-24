@@ -39,7 +39,13 @@ class Taglist extends Model {   //Class name always starts with a capital letter
 		));
 	}
 
-
+	/**
+	 * Get all tags
+	 * 
+	 * No parameter is passed
+	 *
+	 * @return array|false An array of at least one tag object. False on either empty array or error.
+	 */
 	function getAllTags(){
 
 		$query = new Query();
@@ -52,7 +58,13 @@ class Taglist extends Model {   //Class name always starts with a capital letter
 
 	}
 
-
+	/**
+	 * Get all tag lists
+	 * 
+	 * No parameter is passed
+	 *
+	 * @return array|false An array of at least one taglist object. False on either empty array or error.
+	 */
 	function getTaglists(){
 
 		$query = new Query();
@@ -66,6 +78,17 @@ class Taglist extends Model {   //Class name always starts with a capital letter
 	}
 
 
+	/**
+	 * Get a taglist by either the taglist_id or the handle
+	 * 
+	 * Passing no parameter will return false
+	 *
+	 * @param array|false $_options
+	 * * taglist_id - get a specific taglist object with the taglist_id
+	 * * handle - get a specific taglist object with the handle 
+	 * 
+	 * @return array|false One taglist object. False on error.
+	 */
 	function getTaglist($_options = false) {
 
 		// Define default values
@@ -100,7 +123,7 @@ class Taglist extends Model {   //Class name always starts with a capital letter
 
 
 				// Get tags for taglist
-				$sql = "SELECT tags.id, tags.context, tags.value, taglist_tags.position FROM ".$this->db_taglist_tags.", ". $this->db_tags." WHERE taglist_tags.tag_id = tags.id AND taglist_tags.taglist_id = '".$taglist["id"]."'";
+				$sql = "SELECT tags.id, tags.context, tags.value, taglist_tags.position FROM ".$this->db_taglist_tags.", ". $this->db_tags." WHERE taglist_tags.tag_id = tags.id AND taglist_tags.taglist_id = '".$taglist["id"]."' ORDER BY taglist_tags.position ASC";
 
 				if($query->sql($sql)) {
 					$taglist["tags"] = $query->results();
@@ -108,7 +131,7 @@ class Taglist extends Model {   //Class name always starts with a capital letter
 				else {
 					$taglist["tags"] = false;
 				}
-
+				//print_r($taglist);
 				return $taglist;
 			}
 		}
@@ -117,6 +140,15 @@ class Taglist extends Model {   //Class name always starts with a capital letter
 	}
 
 
+	/**
+	 * Add a tag to a taglist by the tag_id and the taglist_id
+	 * 
+	 * /#controller#/addTaglistTag/#taglist_id_id#/#tag_id#
+	 *
+	 * @param array $action
+	 * 
+	 * @return boolean true on success and false on error
+	 */
 	function addTaglistTag($action){
 
 		$taglist_id = $action[1];
@@ -124,14 +156,22 @@ class Taglist extends Model {   //Class name always starts with a capital letter
 
 		if($taglist_id && $tag_id){
 			$query = new Query();
+			$query->checkDbExistence($this->db_tags);
+			$query->checkDbExistence($this->db);
 			$query->checkDbExistence($this->db_taglist_tags);
 
-			$sql = "SELECT * FROM ".$this->db_taglist_tags." WHERE taglist_id = '$taglist_id' AND tag_id = '$tag_id'";
-			if(!$query->sql($sql)) {
-				$sql = "INSERT INTO ".$this->db_taglist_tags." SET taglist_id = '$taglist_id', tag_id = '$tag_id'";
+			$sql = "SELECT * FROM ".$this->db_tags." WHERE id = '$tag_id'";
+			if($query->sql($sql)) {
+				$sql = "SELECT * FROM ".$this->db." WHERE id = '$taglist_id'";
 				if($query->sql($sql)) {
-					message()->addMessage("Tag added");
-					return true;
+					$sql = "SELECT * FROM ".$this->db_taglist_tags." WHERE taglist_id = '$taglist_id' AND tag_id = '$tag_id'";
+					if(!$query->sql($sql)) {
+						$sql = "INSERT INTO ".$this->db_taglist_tags." SET taglist_id = '$taglist_id', tag_id = '$tag_id'";
+						if($query->sql($sql)) {
+							message()->addMessage("Tag added");
+							return true;
+						}
+					}
 				}
 			}
 		}
@@ -142,6 +182,15 @@ class Taglist extends Model {   //Class name always starts with a capital letter
 	}
 
 
+	/**
+	 * Remove a tag from a taglist by the $tag_id and the $taglist_id
+	 * 
+	 * /#controller#/removeTaglistTag/#taglist_id#/#tag_id#
+	 *
+	 * @param array $action
+	 * 
+	 * @return boolean true on success and false on error
+	 */
 	function removeTaglistTag($action){
 
 		$taglist_id = $action[1];
@@ -167,6 +216,16 @@ class Taglist extends Model {   //Class name always starts with a capital letter
 	}
 
 
+	/**
+	 * Update a taglist by the taglist_id
+	 * 
+	 * /#controller#/updateTaglist/#taglist_id#
+	 * info in $_POST
+	 *
+	 * @param array $action
+	 * 
+	 * @return boolean true on success and false on error
+	 */
 	function updateTaglist($action){
 		// Get content of $_POST array which have been "quality-assured" by Janitor 
 		$this->getPostedEntities();
@@ -208,6 +267,16 @@ class Taglist extends Model {   //Class name always starts with a capital letter
 	}
 
 
+	/**
+	 * Save a taglist by the name
+	 * 
+	 * /#controller#/saveTaglist
+	 * Input information is in $_POST
+	 *
+	 * @param array $action
+	 * 
+	 * @return boolean true on success and false on error
+	 */
 	function saveTaglist($action){
 		// Get content of $_POST array which have been "quality-assured" by Janitor 
 		$this->getPostedEntities();
@@ -246,6 +315,15 @@ class Taglist extends Model {   //Class name always starts with a capital letter
 	}
 
 
+	/**
+	 * Delete a taglist by the taglist_id
+	 * 
+	 * /#controller#/deleteTaglist/#taglist_id#
+	 *
+	 * @param array $action
+	 * 
+	 * @return boolean true on success and false on error
+	 */
 	function deleteTaglist($action){
 		global $page;
 		if(count($action) == 2) {
@@ -280,10 +358,17 @@ class Taglist extends Model {   //Class name always starts with a capital letter
 	}
 
 
+	/**
+	 * Duplicate a taglist by the taglist_id
+	 * 
+	 * /#controller#/duplicateTaglist/#taglist_id#
+	 * info in $_POST
+	 *
+	 * @param array $action
+	 * 
+	 * @return array|false One taglist object. False on error 
+	 */
 	function duplicateTaglist($action) {
-
-		
-
 		if(count($action) == 2) {
 			$taglist_id = $action[1];
 
@@ -330,15 +415,25 @@ class Taglist extends Model {   //Class name always starts with a capital letter
 	}
 
 
+	/**
+	 * Update order of the tags added to a taglist
+	 * 
+	 * /#controller#/updateOrder/#taglist_id#
+	 * info in $_POST
+	 *
+	 * @param array $action
+	 * 
+	 * @return boolean true on success and false on eror
+	 */
 	function updateOrder($action) {
 
-		$order_list = getPost("order");
-		print_r($order_list);
+		$order_list = getPost("order"); //$order_list is getting the reordered tags' ids using "," seperator.
+		//print_r($order_list); Could be seen in the network tab as it is handled by javascript.
 		if(count($action) == 2 && $order_list) {
 			$taglist_id = $action[1];
 
 			$query = new Query();
-			$order = explode(",", $order_list);
+			$order = explode(",", $order_list); //"," seperated tags' ids are explode into an array
 
 			for($i = 0; $i < count($order); $i++) {
 				$tag_id = $order[$i];

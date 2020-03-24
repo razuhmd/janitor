@@ -1,10 +1,9 @@
 <?php
 global $action;
-
 global $model;
 
-$items = $model->getTaglists();
-//print_r($items);
+$taglists = $model->getTaglists();
+//print_r($taglists);
 ?>
 
 <div class="scene defaultList taglistList">
@@ -15,15 +14,15 @@ $items = $model->getTaglists();
 	</ul>
 
 	<div class="all_items i:defaultList filters"<?= $HTML->jsData(["order", "search"]) ?>>
-<?		if($items): ?>
+<?		if($taglists): ?>
 		<ul class="items">
-<?			foreach($items as $item): ?>
-			<li class="item item_id:<?= $item["id"] ?>">
-				<h3><?= strip_tags($item["name"]) ?></h3>
+<?			foreach($taglists as $taglist): ?>
+			<li class="item item_id:<?= $taglist["id"] ?>">
+				<h3><?= strip_tags($taglist["name"]) ?></h3>
 
-				<?= $JML->listActions($item,  ["modify"=>[
+				<?= $JML->listActions($taglist,  ["modify"=>[
 					"delete"=>[
-						"url"=>"/janitor/admin/taglist/deleteTaglist/".$item["id"]
+						"url"=>"/janitor/admin/taglist/deleteTaglist/".$taglist["id"]
 					]
 				]]) ?>
 			 </li>
